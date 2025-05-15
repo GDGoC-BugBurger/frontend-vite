@@ -1,0 +1,83 @@
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    border-radius: 16px;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    color: #091057;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-title {
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .login-subtitle {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+  }
+  
+  .input-label {
+    font-size: 16px;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #EC8305;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #EC8305;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .help-links {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .help-links a {
+    color: #EC8305;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .login-container {
+      border: none;
+      box-shadow: none;
+      padding: 1rem; /* 모바일에서 여백 최소화 */
+    }
+  }
+  
