@@ -69,7 +69,7 @@ const ChatScreen: React.FC = () => {
 
     try {
       const res = await axios.post<ServerResponse>(
-        `${backUrl}/api/chats/speech-to-text`,
+        `${backUrl}/api/v1/chats/speech-to-text`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

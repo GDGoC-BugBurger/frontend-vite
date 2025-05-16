@@ -16,7 +16,7 @@ const LoginScreen: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${backUrl}/api/members/sign-in`, {
+      const response = await axios.post(`${backUrl}/api/v1/members/sign-in`, {
         username,
         password,
       });
