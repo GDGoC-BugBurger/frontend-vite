@@ -23,10 +23,17 @@ const LoginScreen: React.FC = () => {
         withCredentials: true, // 이 부분을 추가합니다.
       });
 
-      if (response.status === 200 && response.data.success) {
+      // HTTP 상태 코드가 200이고, response.data.success가 명시적으로 false가 아니면 성공으로 간주합니다.
+      // 이렇게 하면 success 필드가 응답에 없거나(undefined) true일 때 모두 성공으로 처리됩니다.
+      if (response.status === 200 && response.data.success !== false) {
         navigate('/chat'); // router.push 대신 navigate 사용
       } else {
-        setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+        // 서버에서 제공하는 에러 메시지가 있다면 그것을 사용하고, 없다면 기본 메시지를 사용합니다.
+        if (response.data && typeof response.data.message === 'string') {
+          setError(response.data.message);
+        } else {
+          setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
       }
     } catch (err) {
       setError("서버 오류가 발생했습니다. 다시 시도해주세요.");
