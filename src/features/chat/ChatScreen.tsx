@@ -8,7 +8,7 @@ import axios from 'axios';
 import { backUrl } from '../../utils/constant'; 
 
 interface ServerResponse {
-  text?: string;
+  ai?: string; // Changed from text to ai
   audioUrl?: string;
 }
 
@@ -67,13 +67,11 @@ const ChatScreen: React.FC = () => {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'voice.webm');
 
-    const token = localStorage.getItem('accessToken'); // Retrieve the token from localStorage
+    const token = localStorage.getItem('accessToken'); 
 
     if (!token) {
       console.error('STT 전송 실패: 인증 토큰이 없습니다. 다시 로그인해주세요.');
       setMessages((prev) => [...prev, { type: 'ai', text: '❌ 인증 오류: 다시 로그인해주세요.' }]);
-      // Optionally, you could redirect to the login page here
-      // navigate('/'); // Make sure to import useNavigate from 'react-router-dom' if you use this
       return;
     }
 
@@ -84,30 +82,26 @@ const ChatScreen: React.FC = () => {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`, // Add the Authorization header
+            'Authorization': `Bearer ${token}`, 
           },
           withCredentials: true,
         }
       );
 
-      // Assuming 'text' from ServerResponse is the transcript of the user's speech
-      // And 'audioUrl' is the AI's audio response.
-      const { text: userTranscript, audioUrl: aiAudioResponseUrl } = res.data;
+      // The backend returns the AI's transcript in the 'ai' field.
+      // 'audioUrl' is the AI's audio response.
+      const { ai: aiTranscript, audioUrl: aiAudioResponseUrl } = res.data;
 
-      if (userTranscript) {
-        // Display the user's transcribed speech as a 'user' message
-        setMessages((prev) => [...prev, { type: 'user', text: userTranscript }]);
+      if (aiTranscript) {
+        // Display the AI's transcribed speech as an 'ai' message
+        setMessages((prev) => [...prev, { type: 'ai', text: aiTranscript }]);
       }
 
       if (aiAudioResponseUrl) {
         new Audio(aiAudioResponseUrl).play();
-        // If the AI's response is only audio and you want to indicate
-        // the AI is responding in the chat log, you could add a placeholder message:
-        // setMessages((prev) => [...prev, { type: 'ai', text: '🎤 AI가 응답합니다...' }]);
-        // However, this depends on your desired UX and if the AI provides a separate text response
-        // through another mechanism or if this endpoint is expected to provide it.
-        // Based on the current ServerResponse, only the user's transcript (as 'text')
-        // and AI's audio ('audioUrl') are available.
+        // If you only want to play audio and the transcript is already displayed,
+        // you might not need an additional placeholder message here.
+        // If the AI's response is audio AND text, the text is handled by aiTranscript above.
       }
 
     } catch (err) {
