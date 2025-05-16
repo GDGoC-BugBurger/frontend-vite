@@ -20,19 +20,25 @@ const LoginScreen: React.FC = () => {
         username,
         password,
       }, {
-        withCredentials: true, // 이 부분을 추가합니다.
+        withCredentials: true,
       });
 
       // HTTP 상태 코드가 200이고, response.data.success가 명시적으로 false가 아니면 성공으로 간주합니다.
-      // 이렇게 하면 success 필드가 응답에 없거나(undefined) true일 때 모두 성공으로 처리됩니다.
-      if (response.status === 200 && response.data.success !== false) {
-        navigate('/chat'); // router.push 대신 navigate 사용
+      // 또한, 응답 데이터에 accessToken이 있는지 확인합니다. (실제 토큰 필드명에 맞게 수정 필요)
+      if (response.status === 200 && response.data.success !== false && response.data.accessToken) {
+        // Store the token in localStorage
+        localStorage.setItem('accessToken', response.data.accessToken); 
+        navigate('/chat'); 
       } else {
         // 서버에서 제공하는 에러 메시지가 있다면 그것을 사용하고, 없다면 기본 메시지를 사용합니다.
-        if (response.data && typeof response.data.message === 'string') {
-          setError(response.data.message);
-        } else {
-          setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+        if (response.status !== 200 || response.data.success === false) {
+          if (response.data && typeof response.data.message === 'string') {
+            setError(response.data.message);
+          } else {
+            setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+          }
+        } else if (!response.data.accessToken) {
+          setError("로그인에 성공했으나, 인증 토큰을 받지 못했습니다. 관리자에게 문의하세요.");
         }
       }
     } catch (err) {

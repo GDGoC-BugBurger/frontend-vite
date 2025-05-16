@@ -67,13 +67,28 @@ const ChatScreen: React.FC = () => {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'voice.webm');
 
+    const token = localStorage.getItem('accessToken'); // Retrieve the token from localStorage
+
+    if (!token) {
+      console.error('STT 전송 실패: 인증 토큰이 없습니다. 다시 로그인해주세요.');
+      setMessages((prev) => [...prev, { type: 'ai', text: '❌ 인증 오류: 다시 로그인해주세요.' }]);
+      // Optionally, you could redirect to the login page here
+      // navigate('/'); // Make sure to import useNavigate from 'react-router-dom' if you use this
+      return;
+    }
+
     try {
       const res = await axios.post<ServerResponse>(
         `${backUrl}/api/v1/chats/speech-to-text`,
         formData,
         {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`, // Add the Authorization header
+          },
+          withCredentials: true, // If your server strictly uses Bearer tokens and doesn't need cookies for this endpoint,
+                                 // you might test removing this. However, if it was there for a reason (e.g. other session aspects), keep it.
+                                 // The primary fix is the Authorization header.
         }
       );
 
@@ -83,7 +98,11 @@ const ChatScreen: React.FC = () => {
       if (audioUrl) new Audio(audioUrl).play();
     } catch (err) {
       console.error('STT 전송 실패:', err);
-      setMessages((prev) => [...prev, { type: 'ai', text: '❌ 음성 인식 실패' }]);
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
+        setMessages((prev) => [...prev, { type: 'ai', text: '❌ 음성 인식 실패 (권한 없음). 재로그인 후 시도해주세요.' }]);
+      } else {
+        setMessages((prev) => [...prev, { type: 'ai', text: '❌ 음성 인식 실패' }]);
+      }
     }
   };
 
