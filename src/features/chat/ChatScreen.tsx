@@ -86,16 +86,30 @@ const ChatScreen: React.FC = () => {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${token}`, // Add the Authorization header
           },
-          withCredentials: true, // If your server strictly uses Bearer tokens and doesn't need cookies for this endpoint,
-                                 // you might test removing this. However, if it was there for a reason (e.g. other session aspects), keep it.
-                                 // The primary fix is the Authorization header.
+          withCredentials: true,
         }
       );
 
-      const { text, audioUrl } = res.data;
+      // Assuming 'text' from ServerResponse is the transcript of the user's speech
+      // And 'audioUrl' is the AI's audio response.
+      const { text: userTranscript, audioUrl: aiAudioResponseUrl } = res.data;
 
-      if (text) setMessages((prev) => [...prev, { type: 'ai', text }]);
-      if (audioUrl) new Audio(audioUrl).play();
+      if (userTranscript) {
+        // Display the user's transcribed speech as a 'user' message
+        setMessages((prev) => [...prev, { type: 'user', text: userTranscript }]);
+      }
+
+      if (aiAudioResponseUrl) {
+        new Audio(aiAudioResponseUrl).play();
+        // If the AI's response is only audio and you want to indicate
+        // the AI is responding in the chat log, you could add a placeholder message:
+        // setMessages((prev) => [...prev, { type: 'ai', text: '🎤 AI가 응답합니다...' }]);
+        // However, this depends on your desired UX and if the AI provides a separate text response
+        // through another mechanism or if this endpoint is expected to provide it.
+        // Based on the current ServerResponse, only the user's transcript (as 'text')
+        // and AI's audio ('audioUrl') are available.
+      }
+
     } catch (err) {
       console.error('STT 전송 실패:', err);
       if (axios.isAxiosError(err) && err.response?.status === 403) {
