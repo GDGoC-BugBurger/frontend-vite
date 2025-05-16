@@ -19,6 +19,8 @@ const LoginScreen: React.FC = () => {
       const response = await axios.post(`${backUrl}/api/v1/members/sign-in`, {
         username,
         password,
+      }, {
+        withCredentials: true, // 이 부분을 추가합니다.
       });
 
       if (response.status === 200 && response.data.success) {
